@@ -4,17 +4,8 @@ db: conf
 	install -m 644 $(TOP)/template/raritan-*-ess.substitutions  $(E3_MODULE_SRC_PATH)/snmpApp/Db/
 	$(QUIET) $(E3_MODULE_MAKE_CMDS) db
 
-.PHONY: hdrs
-hdrs:
-
-.PHONY: epics
-epics:
-
 module_tests: pytest_tests
 
 .PHONY: pytest_tests
 pytest_tests:
 	source /etc/profile.d/conda.sh && conda create -n python3.7 python=3.7 && conda activate python3.7 && python3.7 -m pip install pyepics pytest snmpsim-lextudio && python3.7 -m pip install run-iocsh -i https://artifactory.esss.lu.se/artifactory/api/pypi/pypi-virtual/simple  && source "${EPICS_BASE}/require/${E3_REQUIRE_VERSION}/bin/activate" && python3.7 -m pytest --verbose
-
-.PHONY: epics-clean
-epics-clean:
