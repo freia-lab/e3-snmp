@@ -1,29 +1,30 @@
 import subprocess
 from time import sleep
 from typing import Union
+from pathlib import Path
 
 import pytest
 from run_iocsh import IOC
 from epics import PV
-from test import helpers
 
-# Standard test fixture
+
+TEST_DIR = Path(__file__).absolute().parent
+
+
 @pytest.fixture(scope="session")  # use the same IOC for all tests
-def inst_test():
-
-    # start simulator
-    data_dir = helpers.TEST_DATA
+def connected_ioc():
+    simulator_address = "127.0.0.1:1024"
     sim_proc = subprocess.Popen(
         [
             "snmpsim-command-responder",
-            f"--data-dir={data_dir}",
-            "--agent-udpv4-endpoint=127.0.0.1:1024",
+            f"--data-dir={TEST_DIR / 'data'}",
+            f"--agent-udpv4-endpoint={simulator_address}",
         ]
     )
     sleep(2)
 
-    cmd = helpers.TEST_CMDS / "pv_test.cmd"
-    ioc = IOC(cmd, ioc_executable="iocsh")
+    cmd = TEST_DIR / "cmds" / "pv_test.cmd"
+    ioc = IOC(cmd)
 
     yield ioc
 
@@ -36,20 +37,18 @@ class TestIOCConnection:
     sleep_in_seconds = 10
 
     @pytest.mark.parametrize("num_runs", range(5))
-    def test_connect(self, inst_test: IOC, num_runs) -> None:
+    def test_connect(self, connected_ioc: IOC, num_runs) -> None:
 
-        ioc = inst_test
-        with ioc:
+        with connected_ioc:
             sleep(self.sleep_in_seconds)
-            assert ioc.is_running()
+            assert connected_ioc.is_running()
 
     @pytest.mark.parametrize("num_runs", range(5))
-    def test_disconnect(self, inst_test: IOC, num_runs) -> None:
+    def test_disconnect(self, connected_ioc: IOC, num_runs) -> None:
 
-        ioc = inst_test
-        with ioc:
+        with connected_ioc:
             sleep(self.sleep_in_seconds)
-        assert not ioc.is_running()
+        assert not connected_ioc.is_running()
 
 
 class TestReadWrite:
@@ -68,13 +67,12 @@ class TestReadWrite:
     )
     def test_read_variable(
         self,
-        inst_test: IOC,
+        connected_ioc: IOC,
         pv_name_read: str,
         expected_val: Union[str, int],
     ) -> None:
 
-        ioc = inst_test
-        with ioc:
+        with connected_ioc:
             sleep(self.sleep_in_seconds)
 
             # Read back via input PV
@@ -98,14 +96,13 @@ class TestReadWrite:
     )
     def test_write_variable(
         self,
-        inst_test: IOC,
+        connected_ioc: IOC,
         pv_name_read: str,
         pv_name_write: str,
         write_val: Union[str, int],
     ) -> None:
 
-        ioc = inst_test
-        with ioc:
+        with connected_ioc:
             sleep(self.sleep_in_seconds)
 
             # Read back via input PV
@@ -133,14 +130,13 @@ class TestReadWrite:
     )
     def test_invalid_write(
         self,
-        inst_test: IOC,
+        connected_ioc: IOC,
         pv_name_read: str,
         pv_name_write: str,
         write_val: Union[int, float],
     ) -> None:
 
-        ioc = inst_test
-        with ioc:
+        with connected_ioc:
             sleep(self.sleep_in_seconds)
 
             pv_read = PV(pv_name_read)
@@ -156,12 +152,11 @@ class TestReadWrite:
 
         assert res != write_val
 
-    def test_read_counter(self, inst_test: IOC):
+    def test_read_counter(self, connected_ioc: IOC):
 
         pv_read = PV("TestSnmp:TestCounter-R")
 
-        ioc = inst_test
-        with ioc:
+        with connected_ioc:
             sleep(self.sleep_in_seconds)
 
             number_of_samples_to_capture = 5
