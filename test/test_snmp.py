@@ -17,14 +17,14 @@ def connected_ioc():
     sim_proc = subprocess.Popen(
         [
             "snmpsim-command-responder",
-            f"--data-dir={TEST_DIR / 'data'}",
+            f"--data-dir={(TEST_DIR / 'data').as_posix()}",
             f"--agent-udpv4-endpoint={simulator_address}",
         ]
     )
     sleep(2)
 
     cmd = TEST_DIR / "cmds" / "pv_test.cmd"
-    ioc = IOC(cmd)
+    ioc = IOC(cmd.as_posix())
 
     yield ioc
 
