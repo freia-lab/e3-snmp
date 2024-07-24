@@ -1,3 +1,21 @@
+* After cloning the repository set-up cloning of all branches.
+To see all remte branches use command:
+
+git branch -a
+
+* Fetch all remote branches:
+git fetch --all
+
+* Create local branches:
+
+for branch in $(git branch -r | grep -v '\->'); do
+    git branch --track ${branch#origin/} $branch
+done
+
+* Make sure that branches are up to-date:
+
+git pull -all
+
 * To synchronize with the upstream repository at gitlab issue the command
 
 git remote add upstream https://gitlab.esss.lu.se/e3/wrappers/e3-snmp.git 
