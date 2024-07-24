@@ -14,6 +14,7 @@ NVENTSUP:=NventSGP/nventSgpSup
 USR_CFLAGS   += $(shell net-snmp-config --cflags)
 USR_CFLAGS   += -DNETSNMP_NO_INLINE
 
+USR_LDFLAGS  += -Wl,--no-as-needed
 USR_LDFLAGS  += $(shell net-snmp-config --libs)
 
 USR_CFLAGS   += $(shell $(PERL) $(where_am_I)$(APPSRC)/getNetSNMPversion.pl)
