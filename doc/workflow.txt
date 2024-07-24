@@ -1,0 +1,31 @@
+* To synchronize with the upstream repository at gitlab issue the command
+
+git remote add upstream https://gitlab.esss.lu.se/e3/wrappers/e3-snmp.git 
+
+The command above is needed only once after cloning the repository.
+
+git checkout main
+git pull upstream/master
+
+Push the main to origin.
+Checkout the commit you want to have freia branch based on and create the new freia branch.
+Checkout the new freia branch, make the necessary changes, commit them and push to origin.
+Tag the commit if needed.
+ 
+See the branches and tags in the repository, ei:
+
+konrad@nuc-11:~/modules/e3-snmp$ git tag
+7.0.5-3.4.1/1.0.0.2-3e7ebe4-20210521T181052
+7.0.5-3.4.1/1.1.0.1-3530959-20210524T180012
+7.0.6.1-4.0.0/1.1.0-1.1.0.3+0-0fcbc3a-20220302T104236
+7.0.6.1-4.0.0/1.1.0-1.1.0.3+0-0fcbc3a-20220302T104537
+7.0.7-5.0.0/1.1.0-1.1.0.4+0-5876dbe-20230127T145044
+7.0.8-5.1.0/1.1.0-1.1.0.4+1-941e85e-20240419T191942
+7.0.8-5.1.0/1.1.0-1.1.0.4+2-065b83c-20240422T152612
+konrad@nuc-11:~/modules/e3-snmp$ git branch
+  freia-7.0.7-5.0.0/1.1.0-1.1.0.4+0-5876dbe
+* main
+
+
+git push origin freia-7.0.7-5.0.0/1.1.0-1.1.0.4+0-5876dbe
+
